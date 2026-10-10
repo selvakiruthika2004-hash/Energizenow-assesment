@@ -1,0 +1,75 @@
+========================================================================
+SMARTSERVE: INTELLIGENT COMPLAINT & SLA MANAGEMENT PLATFORM
+RUN INSTRUCTIONS
+========================================================================
+
+Follow these exact steps to start the application from scratch or after restarting your computer.
+
+------------------------------------------------------------------------
+PREREQUISITES:
+------------------------------------------------------------------------
+1. Node.js installed (v18 or higher recommended).
+2. MongoDB installed and running locally on mongodb://127.0.0.1:27017
+
+------------------------------------------------------------------------
+STEP 1: SEED THE DATABASE (Optional, but recommended for demo data)
+------------------------------------------------------------------------
+This command deletes old data and creates the necessary admin/manager/agent accounts along with 30 demo complaints.
+
+1. Open a terminal.
+2. Navigate to the backend folder:
+   cd "C:\Ayngaran\kiru project\backend"
+3. Run the seed script:
+   node seed.js
+
+Output should say: "MongoDB connected" followed by "Data seeded successfully".
+
+------------------------------------------------------------------------
+STEP 2: START THE BACKEND SERVER
+------------------------------------------------------------------------
+1. Open a terminal (or use the same one from Step 1).
+2. Navigate to the backend folder:
+   cd "C:\Ayngaran\kiru project\backend"
+3. Start the Express API server using nodemon:
+   npx nodemon server.js
+
+The backend will start running on http://localhost:5000. 
+You will see "MongoDB connected" and "Server running on 5000" in the console.
+Keep this terminal window open!
+
+------------------------------------------------------------------------
+STEP 3: START THE FRONTEND SERVER
+------------------------------------------------------------------------
+1. Open a NEW, separate terminal window.
+2. Navigate to the frontend folder:
+   cd "C:\Ayngaran\kiru project\frontend"
+3. Start the React/Vite development server:
+   npm run dev
+
+The frontend will start running on http://localhost:5173 (or 5174).
+Keep this terminal window open!
+
+------------------------------------------------------------------------
+STEP 4: ACCESS THE APPLICATION
+------------------------------------------------------------------------
+1. Open your web browser.
+2. Go to the URL provided by the frontend terminal (usually http://localhost:5173).
+3. Log in using the generated demo credentials:
+
+   Admin Account:
+   Email: admin@test.com
+   Password: password123
+
+   Customer Account:
+   Email: customer1@test.com
+   Password: password123
+
+   Agent Account:
+   Email: agent1@test.com
+   Password: password123
+
+------------------------------------------------------------------------
+TROUBLESHOOTING:
+------------------------------------------------------------------------
+- If you see "Network Error" on the login screen, make sure your backend server (Step 2) is running.
+- If the SLA automatic escalation cron job doesn't seem to trigger, ensure the backend terminal is open (the cron runs automatically in the Express server every minute).

@@ -1,0 +1,77 @@
+========================================================================
+SMARTSERVE: PROJECT UPGRADE CHANGELOG
+========================================================================
+This document summarizes all the features, APIs, and architectural upgrades successfully implemented directly into the existing C:\Ayngaran\kiru project workspace to transform it into the "SmartServe" enterprise platform.
+
+------------------------------------------------------------------------
+1. DATABASE & MODELS (MongoDB/Mongoose)
+------------------------------------------------------------------------
+- Expanded `User.js` to securely store password hashes (bcrypt), phone numbers, departments, active/suspended status, and last login time.
+- Expanded `Complaint.js` to track complete SLA lifecycle (responseDeadline, resolutionDeadline, actualResponseTime, systemSuggestedPriority, priorityOverride, escalationLevel).
+- Added `ComplaintActivity.js` model to act as a permanent, unalterable timeline ledger of all state changes (e.g., OPEN -> IN PROGRESS).
+- Added `AuditLog.js` model to track secure system-level actions (user creation, complaint creation, escalation).
+
+------------------------------------------------------------------------
+2. AUTHENTICATION & SECURITY
+------------------------------------------------------------------------
+- Completely replaced mock/hard-coded authentication with a real JWT (JSON Web Token) based system.
+- Implemented `bcrypt` password hashing on registration and login.
+- Added `/api/auth/register` backend route for actual customer sign-ups.
+- Added strict Role-Based Access Control (RBAC) middleware (`protect` and `authorize(...roles)`) to the backend routes ensuring Customers cannot access Admin APIs.
+
+------------------------------------------------------------------------
+3. SMART TRIAGE & RULE-BASED ML (Backend Engine)
+------------------------------------------------------------------------
+- Created `src/utils/smartEngine.js` which executes automatically on Complaint creation.
+- Implemented Keyword-based NLP parsing of the Complaint Subject & Description.
+- Automatically calculates and attaches: 
+   1. Sentiment Analysis (NEGATIVE, HIGHLY_NEGATIVE, etc.)
+   2. Risk Score %
+   3. Smart Priority Recommendation (e.g., marks "outage" as CRITICAL).
+
+------------------------------------------------------------------------
+4. AUTOMATIC SLA ESCALATION (Node-Cron)
+------------------------------------------------------------------------
+- Installed `node-cron` and created `src/utils/cronJobs.js`.
+- The Express server now runs a continuous background job that scans MongoDB for unresolved complaints.
+- If 75% of the resolution deadline has passed, it auto-flags the SLA as "WARNING".
+- If the deadline breaches, the Cron job automatically modifies the Complaint to `isEscalated = true`, bumps the `escalationLevel`, forces status to `ESCALATED`, and writes an automatic `ComplaintActivity` timeline record.
+
+------------------------------------------------------------------------
+5. ANALYTICS & KPI DASHBOARD (Backend & Frontend)
+------------------------------------------------------------------------
+- Added `/api/dashboard/analytics` route to aggregate MongoDB metrics safely based on the requester's role.
+- Created `Analytics.jsx` in the React frontend utilizing `recharts` to render visual Bar Charts of SLA Compliance vs Breached SLA.
+
+------------------------------------------------------------------------
+6. ENHANCED SEEDING CAPABILITY
+------------------------------------------------------------------------
+- Overhauled `seed.js` to dynamically generate 30+ highly varied complaints spanning multiple statuses (OPEN, ESCALATED, RESOLVED), assigning them randomly across 10 Customers and 8 Support Agents, calculating mathematically accurate SLA Deadlines for all of them so the dashboard looks populated and realistic immediately upon launch.
+
+------------------------------------------------------------------------
+7. FRONTEND UI UPGRADES (React/Vite/Tailwind)
+------------------------------------------------------------------------
+- Redesigned `Login.jsx` to match a professional Enterprise SaaS aesthetic.
+- Added a full `Register.jsx` workflow allowing new Customers to create accounts securely.
+- Updated `App.jsx` React-Router routing to connect all the newly built screens.
+
+------------------------------------------------------------------------
+8. ADMIN STATUS DROPDOWN FIX
+------------------------------------------------------------------------
+- Fixed the issue in the admin portal where complaint status was not updating from the dropdown list.
+- Implemented an interactive status `<select>` dropdown directly in the Admin Dashboard complaints table.
+- Selecting any status immediately updates MongoDB, updates UI state, re-calculates summary cards, and displays confirmation feedback.
+- Made status update notes optional on the backend so quick dropdown updates never fail with validation errors.
+- Fully supported all status transitions (OPEN, ASSIGNED, IN PROGRESS, RESOLVED, CUSTOMER CONFIRMED, ON HOLD, CLOSED, ESCALATED, REJECTED).
+
+------------------------------------------------------------------------
+9. CUSTOMER CALLER OPTION & ADMIN PHONE COMPLAINT FILING
+------------------------------------------------------------------------
+- Added 24/7 Telephone Support helpline option (1800-200-SMART) for customers who cannot file a complaint online.
+- Customers can click "Call Support Now" from Dashboard or Create Complaint page to dial the helpline.
+- Admin portal shows live Incoming Customer Calls with visual alerts and customer contact info.
+- Admin can answer incoming calls and immediately file complaints on behalf of the customer ("File Complaint on Customer Behalf").
+- Implemented `filingMethod` tracking ('REGISTER' vs 'CALL').
+- Customer dashboard and complaint details clearly show whether each complaint was filed via "Register" (online) or "Through Call" (phone helpline).
+- Added filter tabs on dashboard: All, Via Register, Through Call.
+- Added dedicated `/calls` admin management page.

@@ -35,3 +35,4 @@ Thumbs.db
 .system_generated/
 scratch/
 push_to_github.bat
+start_live_website.bat

@@ -15,7 +15,7 @@
 ## 🌐 Live Web Application Demo
 
 Experience the live application right now:
-👉 **[https://a12067781cd3ad.lhr.life](https://a12067781cd3ad.lhr.life)**
+👉 **[https://1286ec68e4790f.lhr.life](https://1286ec68e4790f.lhr.life)**
 
 ### 🔑 Demo Login Credentials (All passwords: `password123`)
 

@@ -34,3 +34,4 @@ Thumbs.db
 # Temporary & system generated files
 .system_generated/
 scratch/
+push_to_github.bat
